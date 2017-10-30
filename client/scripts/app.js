@@ -5,26 +5,42 @@ var Movie = Backbone.Model.extend({
   },
 
   toggleLike: function() {
-    // your code here
+    this.set('like', !this.get('like'));
   }
 
 });
 
+
+//=======================================
+
+
 var Movies = Backbone.Collection.extend({
+
+  reverseSort: false,
 
   model: Movie,
 
   initialize: function() {
-    // your code here
+    this.on('change', this.sort);
   },
 
   comparator: 'title',
 
   sortByField: function(field) {
-    // your code here
+    if (this.comparator === field) {
+      this.reverseSort = !this.reverseSort;
+    } else {
+      this.comparator = field;
+    }
+    this.sort();
   }
 
 });
+
+
+//=======================================
+
+
 
 var AppView = Backbone.View.extend({
 
@@ -46,6 +62,10 @@ var AppView = Backbone.View.extend({
 
 });
 
+
+//=======================================
+
+
 var MovieView = Backbone.View.extend({
 
   template: _.template('<div class="movie"> \
@@ -58,7 +78,7 @@ var MovieView = Backbone.View.extend({
                         </div>'),
 
   initialize: function() {
-    // your code here
+    this.model.on('change', this.render, this);  
   },
 
   events: {
@@ -66,7 +86,7 @@ var MovieView = Backbone.View.extend({
   },
 
   handleClick: function() {
-    // your code here
+    this.model.toggleLike();  
   },
 
   render: function() {
@@ -76,10 +96,14 @@ var MovieView = Backbone.View.extend({
 
 });
 
+
+//=======================================
+
+
 var MoviesView = Backbone.View.extend({
 
   initialize: function() {
-    // your code here
+    this.collection.on('sort', this.render, this);
   },
 
   render: function() {
@@ -88,8 +112,13 @@ var MoviesView = Backbone.View.extend({
   },
 
   renderMovie: function(movie) {
+    // console.log(this.collection.reverseSort);
     var movieView = new MovieView({model: movie});
-    this.$el.append(movieView.render());
+    if (this.collection.reverseSort) {
+      this.$el.prepend(movieView.render());      
+    } else {
+      this.$el.append(movieView.render());
+    }
   }
 
 });
