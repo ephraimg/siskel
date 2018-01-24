@@ -16,8 +16,6 @@ var Movie = Backbone.Model.extend({
 
 var Movies = Backbone.Collection.extend({
 
-  reverseSort: false,
-
   model: Movie,
 
   initialize: function() {
@@ -25,6 +23,8 @@ var Movies = Backbone.Collection.extend({
   },
 
   comparator: 'title',
+
+  reverseSort: false,
 
   sortByField: function(field) {
     if (this.comparator === field) {
